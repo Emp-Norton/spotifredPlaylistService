@@ -49,7 +49,7 @@ let shuffleProgressiveBpm = (songs) => {
   return convertBackToSongList(randomizedAndSortedByBpm);
 }
 
-let addShuffledQueue = (playlist, algorithm) => { // fix this
+let addShuffledQueue = (playlist, algorithm) => { 
 	let shuffled = algorithm == "random" ? randomize(playlist.songList) : shuffleProgressiveBpm(playlist.songList);
 	playlist.shuffledQueue = shuffled;
 	return playlist
