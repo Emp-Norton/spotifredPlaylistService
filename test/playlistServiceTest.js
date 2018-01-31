@@ -46,7 +46,7 @@ describe('/getPlaylist', function () {
 
   it('should return the requested playlist', function (done) { // this will break if I reload the DB with new dummy data, since the actual mongo-generated IDs are already attached
     http.get('http://localhost:3000/getPlaylist/1', function (res) {
-    	let expected = JSON.stringify({"song_list":[{"_id":"5a6ff2081f6179389fe1dec0","songId":1,"bpm":50},{"_id":"5a6ff2081f6179389fe1debf","songId":2,"bpm":60},{"_id":"5a6ff2081f6179389fe1debe","songId":3,"bpm":60},{"_id":"5a6ff2081f6179389fe1debd","songId":4,"bpm":120},{"_id":"5a6ff2081f6179389fe1debc","songId":5,"bpm":120}],"keywords":["fake","fictitious"],"_id":"5a6ff2081f6179389fe1debb","playlistId":1,"playlist_name":"my first playlist","__v":0})
+    	let expected = JSON.stringify({"songList":[{"_id":"5a71446f124aed3b64c4d141","songId":1,"bpm":50},{"_id":"5a71446f124aed3b64c4d140","songId":2,"bpm":60},{"_id":"5a71446f124aed3b64c4d13f","songId":3,"bpm":60},{"_id":"5a71446f124aed3b64c4d13e","songId":4,"bpm":120},{"_id":"5a71446f124aed3b64c4d13d","songId":5,"bpm":120}],"shuffledQueue":[],"keywords":["fake","fictitious"],"_id":"5a71446f124aed3b64c4d13c","playlistId":1,"playlistName":"my first playlist","__v":0})
       var data = '';
 
       res.on('data', function (chunk) {
@@ -61,30 +61,33 @@ describe('/getPlaylist', function () {
   });
 });
 
-// describe('/getFeaturedPlaylists', function () {
-//   it('should return 200', function (done) {
-//     http.get('http://localhost:3000/getFeaturedPlaylists', function (res) {
-//       assert.equal(200, res.statusCode);
-//       done();
-//     });
-//   });
+describe('/getFeaturedPlaylists', function () {
+  it('should return 200', function (done) {
+    http.get('http://localhost:3000/getFeaturedPlaylists', function (res) {
+      assert.equal(200, res.statusCode);
+      done();
+    });
+  });
 
-//   it('should return an array of featured playlists', function (done) {
-//     http.get('http://localhost:3000/getFeaturedPlaylists', function (res) {
+  it('should return an array of featured playlists', function (done) {
+    http.get('http://localhost:3000/getFeaturedPlaylists', function (res) {
+    	//let parsedResponse = JSON.parse(res.data)
+    	console.log(res.body)
+    	console.log(res)
 
-//       var data = '';
+      var data = '';
 
-//       res.on('data', function (chunk) {
-//         data += chunk;
-//       });
+      res.on('data', function (chunk) {
+        data += chunk;
+      });
 
-//       res.on('end', function () {
-//         assert.equal(expected, data);
-//         done();
-//       });
-//     });
-//   });
-// });
+      res.on('end', function () {
+        assert.equal(expected, data);
+        done();
+      });
+    });
+  });
+});
 
 
 
