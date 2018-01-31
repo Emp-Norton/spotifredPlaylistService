@@ -12,7 +12,7 @@ keywords: ['fake', 'fictitious']
 playlistName: 'my second playlist',
 songList: [{songId: 11, bpm: 50}, {songId: 12, bpm: 60}, {songId: 13, bpm: 60}, {songId: 14, bpm: 120}, {songId: 15, bpm: 120}],
 shuffledQueue: [],
-keywords: ['fake', 'fictitious']
+keywords: ['fake', 'featured']
 },
 {playlistId: 3,
 playlistName: 'my third playlist',
