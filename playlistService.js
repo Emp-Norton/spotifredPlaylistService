@@ -5,16 +5,10 @@ let shuffle = require('./helpers/shuffleHelper.js');
 let app = express();
 
 // load shuffle algorithms as middleware, or load as dependencies and call as needed?
-app.get('/test/:message', (req, res) => {
-
-	res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end(req.params.message);
-	
-})
 
 app.get('/getFeaturedPlaylists', (req, res) => {
 	database.Playlist.find({keywords: { "$in" : ["featured"]}}, function(err, data) {
-		err ? console.log(err) : res.send(data);
+		err ? console.log(err) : res.send({body: JSON.stringify(data)});
 	})
 })
 
