@@ -43,20 +43,20 @@ let sortBpm = (songs) => {
   return sorted
 }
 
-let shuffleProgressiveBpm = (playlist) => {
-  let sortedByBpm = sortBpm(playlist);
+let shuffleProgressiveBpm = (songs) => {
+  let sortedByBpm = sortBpm(songs);
   let randomizedAndSortedByBpm = randomizeBpmGroup(sortedByBpm);
   return convertBackToSongList(randomizedAndSortedByBpm);
 }
 
-// let addShuffledQueue = (playlist, queue) => { // fix this
-// 		let shuffled = shuffle.randomize(data[0].songList)
-// 				data[0].shuffledQueue = shuffled;
-// 	return playlistWithQueue
-// }
+let addShuffledQueue = (playlist, algorithm) => { // fix this
+	let shuffled = algorithm == "random" ? randomize(playlist.songList) : shuffleProgressiveBpm(playlist.songList);
+	playlist.shuffledQueue = shuffled;
+	return playlist
+}
 
 module.exports = {
 	shuffleProgressiveBpm,
 	randomize,
-	addShuffledQueue
+  addShuffledQueue
 }
