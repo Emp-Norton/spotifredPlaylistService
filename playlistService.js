@@ -18,20 +18,18 @@ app.get('/getFeaturedPlaylists', (req, res) => {
 	})
 })
 
-app.get('/getPlaylist/:id/:algo', (req, res) => { // this needs to attach the shuffled queue instead of replace songList
+app.get('/getPlaylist/:id/:algo', (req, res) => { 
 	database.Playlist.find({playlistId: req.params.id}, function(err, data) {
 		if (err) {
 		  console.log(err)
 		} else {
 			console.log(`Serving playlist #${req.params.id} with ${req.params.algo == 'random' ? 'random' : 'progressive BPM'} algorithm`)
 			if (req.params.algo == 'random') { 
-				let shuffled = shuffle.randomize(data[0].songList)
-				data[0].shuffledQueue = shuffled;
-				res.json(data) 
+				let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'random')
+				res.json(playlistWithQueue) 
 			} else if (req.params.algo == 'progressive') { 
-				let shuffled = shuffle.shuffleProgressiveBpm(data[0].songList);
-				data[0].shuffledQueue = shuffled;
-				res.json(data) 
+				let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'progressive')
+				res.json(playlistWithQueue) 
 			} else {
 				res.send('invalid shuffle algorithm. Options are "random" or "progressive"')
 			}
