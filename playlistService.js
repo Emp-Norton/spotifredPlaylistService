@@ -6,13 +6,21 @@ let app = express();
 
 // load shuffle algorithms as middleware, or load as dependencies and call as needed?
 
-app.get('/getFeaturedPlaylists', (req, res) => {
+app.get('/getFeaturedPlaylists', (req, res) => { // add shuffled queues to each of these
 	database.Playlist.find({keywords: { "$in" : ["featured"]}}, function(err, data) {
-		err ? console.log(err) : res.send({body: JSON.stringify(data)});
+		if (err) {
+			console.log(err) 
+		} else { 
+			let playlists = [];
+			data.forEach(datum => {
+				return shuffle.addShuffledQueue(datum, 'random')
+			})
+			res.send({body: JSON.stringify(data)});
+		}
 	})
 })
 
-app.get('/getPlaylist/:id/:algo', (req, res) => { 
+app.get('/getPlaylist/:id/:algo', (req, res) => { // remove the algo param and replace with toggle or history object
 	database.Playlist.find({playlistId: req.params.id}, function(err, data) {
 		if (err) {
 		  console.log(err)
@@ -33,11 +41,7 @@ app.get('/getPlaylist/:id/:algo', (req, res) => {
 
 app.get('/getPlaylist/:id', (req, res) => {
 	database.Playlist.find({playlistId: req.params.id}, function(err, data) {
-		if (err){
-			console.log(err)
-		} else {
-			res.json(data[0])
-		}
+		err ? console.log(err) : res.json(data[0])
 	})
 })
 
