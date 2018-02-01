@@ -1,30 +1,9 @@
 'use strict'
-let mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/entries');
 
-let connection = mongoose.connection;
+let db = require('./testDatabase.js')
+let fs = require('fs');
 
-connection.once('open', function callback(){
-	console.log('Connected to DB')
-})
 
-// let playlistSchema = mongoose.Schema({
-// playlistId: {type: Number, unique: true},
-// playlistName: String,
-// // created_by: {type: Number, unique: false}, // lookup playlists created by user
-// songList: [{songId: Number, bpm: Number}],
-// shuffledQueue: [{songId: Number, bpm: Number}],
-// keywords: [{type: String}]
-// // subscribers: [{}] // to register popularity 
-// });
-
-let entrySchema = mongoose.Schema({
-	entryNumber: Number,
-	entryName: String,
-	songList: [{songId: Number, bpm: Number}],
-	shuffledQueue: [{songId: Number, bpm: Number}],
-	keywords: [{type: String}]
-});
 let generateStart = Date.now() // data creation start time 
 let bpmOptions = [45, 60, 90, 120, 150];
 let songs = [];
@@ -35,11 +14,9 @@ for (let songIdIndex = 1; songIdIndex < 1000; songIdIndex++) { // create 1000 fa
 	songs.push({songId: songIdIndex, bpm: bpmOptions[bpmIndex]});
 }
 
-let Entry = mongoose.model('Entry', entrySchema);
-
 let entries = [];
 
-for (let i = 0; i < 250000; i++) { // create 10K entry objects
+for (let i = 0; i < 500000; i++) { // create 10K entry objects
 	let fakeObj = {
 		entryNumber: i,
 		entryName: `Playlist${i}`,
@@ -47,7 +24,7 @@ for (let i = 0; i < 250000; i++) { // create 10K entry objects
 		shuffledQueue: [],
 		keywords: []
 	}
-	let songlistLength = Math.floor((Math.random() * 20) + 1); // randomize song_list length for each obj
+	let songlistLength = Math.floor((Math.random() * 15) + 5); // randomize song_list length for each obj
 	
 	for (let songIdx = 0; songIdx < songlistLength; songIdx++){ // fill song list with randomly selected song objs
 		let s_idx = Math.floor(Math.random() * songs.length); // create random index to select from songs array
@@ -58,7 +35,7 @@ for (let i = 0; i < 250000; i++) { // create 10K entry objects
 
 	for (let keywordIndex = 0; keywordIndex < numKeywords; keywordIndex++) {
 		let k_idx = Math.floor(Math.random() * keywords.length); // randomly choose keyword
-		if (fakeObj.keywords.indexOf(numKeywords[k_idx]) == -1){ // check keyword is already added
+		if (fakeObj.keywords.indexOf(numKeywords[k_idx]) == -1){ // check keyword is not already added
 		  fakeObj.keywords.push(keywords[k_idx]) // add keyword
 		}
 	}
@@ -72,17 +49,48 @@ let generateFinish = Date.now()
 
 // let start = Date.now(); // data save start time
 
-// entries.forEach(entry => {
-// 	let entryToSave = new Entry(entry);	
-// 	entryToSave.save((err, data) => {
-// 		if (err) {
-// 			console.log(err);
-// 		} else {
-// 			console.log(data);
-// 		}
-// 	})
-// })
+// // for (let saveIndex = 0; saveIndex < 15000; saveIndex++) {
+// // 	let entryToSave = new db.Entry(entries[saveIndex]);	
+// // 	entryToSave.save((err, data) => {
+// // 		if (err) {
+// // 			console.log(err);
+// // 		} else {
+// // 			console.log('saved' + saveIndex);
+// // 		}
+// // 	})
+// // }
+
+// // for (let saveIndex = 15000; saveIndex < 30000; saveIndex++) {
+// // 	let entryToSave = new db.Entry(entries[saveIndex]);	
+// // 	entryToSave.save((err, data) => {
+// // 		if (err) {
+// // 			console.log(err);
+// // 		} else {
+// // 			console.log('saved' + saveIndex);
+// // 		}
+// // 	})
+// // }
+
+
+
 // let finish = Date.now(); // data save finish time 
-console.log(entries.length)
+
 let generateTime = Math.abs(generateFinish - generateStart);
-console.log(generateTime)
+
+let writeTo = fs.createWriteStream('./playlistData.csv');
+
+entries.forEach((entry, index) => {
+	if (index % 1000 == 0) console.log('Writing entry #' + index)
+	writeTo.write(JSON.stringify(entry));
+})
+
+
+
+
+
+
+
+
+
+
+
