@@ -72,7 +72,7 @@ describe('/getFeaturedPlaylists', function () {
   it('should return an array of featured playlists', function (done) {
     http.get('http://localhost:3000/getFeaturedPlaylists', function (res) {
     	//let parsedResponse = JSON.parse(res.data)
-    	console.log(res.body)
+    	console.log(res.body) // determine shape of response and devise a test
     	console.log(res)
 
       var data = '';
