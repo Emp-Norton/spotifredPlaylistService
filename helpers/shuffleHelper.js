@@ -1,25 +1,32 @@
+'use strict'
 let randomize = (originalArray) => {
   let arr = originalArray.slice();
-  for (let i = 0; i < arr.length; i++) { 
-    let newIndex = Math.floor(Math.random() * arr.length); 
+  for (let i = 0; i < arr.length; i++) {
+    let newIndex = Math.floor(Math.random() * arr.length);
     let tmp = arr[newIndex];
     arr[newIndex] = arr[i];
-    arr[i] = tmp; 
+    arr[i] = tmp;
   }
   return arr
 }
 
-let randomizeBpmGroup = (songs) => { 
+let randomizeBpmGroup = (songs) => {
   let bpmGroups = {};
   songs.forEach(song => {
     if (!bpmGroups.hasOwnProperty(song.bpm)) {
       bpmGroups[song.bpm] = [];
-    }
-    if (!bpmGroups[song.bpm].includes(song)) {
       bpmGroups[song.bpm].push(song)
+    } else {
+      if (bpmGroups[song.bpm].indexOf(song) == -1) {
+      	bpmGroups[song.bpm].push(song);
+      }
     }
+    
+   // if (!bpmGroups[song.bpm].includes(song)) {
+     // bpmGroups[song.bpm].push(song)
+   // }
   })
-  
+
   for (let group in bpmGroups) {
     bpmGroups[group] = randomize(bpmGroups[group])
   }

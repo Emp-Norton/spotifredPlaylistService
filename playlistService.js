@@ -1,3 +1,4 @@
+'use strict'
 // TODO: Messaging logic, addtnl 'nice to have' functionality
 let express = require('express');
 let database = require('./database/database.js')
@@ -53,6 +54,6 @@ exports.close = function (callback) {
   this.server.close(callback);
 };
 
-app.listen(port, () => {
+app.listen(80, () => {
 	console.log('listening on '+ port)
 })
