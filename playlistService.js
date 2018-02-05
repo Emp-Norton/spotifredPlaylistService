@@ -7,41 +7,36 @@ let app = express();
 // load shuffle algorithms as middleware, or load as dependencies and call as needed?
 
 app.get('/getFeaturedPlaylists', (req, res) => { // add shuffled queues to each of these
-	database.Playlist.find({keywords: { "$in" : ["featured"]}}, function(err, data) {
-		if (err) {
-			console.log(err) 
-		} else { 
-			let playlists = [];
-			data.forEach(datum => {
-				return shuffle.addShuffledQueue(datum, 'random')
-			})
-			res.send({body: JSON.stringify(data)});
-		}
+	let query = {
+		keywords: { "$in" : ["featured"]}
+	}
+	database.Playlist.find({query}).limit(5).exec(function(err, data) { // find a way to only pull most recent. Maybe #sort(created_at)?
+		err ? console.log(err) : res.send({body: JSON.stringify(data)});
 	})
 })
 
-app.get('/getPlaylist/:id/:algo', (req, res) => { // remove the algo param and replace with toggle or history object
+app.get('/getPlaylist/:id/', (req, res) => { // remove the algo param and replace with toggle or history object
 	database.Playlist.find({playlistId: req.params.id}, function(err, data) {
 		if (err) {
 		  console.log(err)
 		} else {
-			console.log(`Serving playlist #${req.params.id} with ${req.params.algo == 'random' ? 'random' : 'progressive BPM'} algorithm`)
-			if (req.params.algo == 'random') { 
-				let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'random')
-				res.json(playlistWithQueue) 
-			} else if (req.params.algo == 'progressive') { 
-				let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'progressive')
-				res.json(playlistWithQueue) 
-			} else {
-				res.send('invalid shuffle algorithm. Options are "random" or "progressive"')
+			let responseObject = {
+				playlist: undefined,
+				algorithm: undefined
 			}
+			console.log(`Serving playlist #${req.params.id} with ${req.params.id % 2 === 0 ? 'random' : 'progressive BPM'} algorithm`)
+			if (req.params.id % 2 === 0) { 
+				let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'random')
+				responseObject.playlist = playlistWithQueue;
+				responseObject.algorithm = "random";
+				res.json(responseObject) 
+			} else { 
+				let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'progressive')
+				responseObject.playlist = playlistWithQueue;
+				responseObject.algorithm = "progressive";
+				res.json(responseObject)
+			} 
 		}
-	})
-})
-
-app.get('/getPlaylist/:id', (req, res) => {
-	database.Playlist.find({playlistId: req.params.id}, function(err, data) {
-		err ? console.log(err) : res.json(data[0])
 	})
 })
 
