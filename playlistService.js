@@ -9,9 +9,10 @@ let app = express();
 
 app.get('/getFeaturedPlaylists', (req, res) => { // add shuffled queues to each of these
 	let query = {
+		//keywords: "featured"
 		keywords: { "$in" : ["featured"]}
 	}
-	database.Playlist.find({query}).limit(5).exec(function(err, data) { // find a way to only pull most recent. Maybe #sort(created_at)?
+	database.Playlist.find(query).limit(5).exec(function(err, data) { // find a way to only pull most recent. Maybe #sort(created_at)?
 		err ? console.log(err) : res.send({body: JSON.stringify(data)});
 	})
 })
