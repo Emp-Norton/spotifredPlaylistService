@@ -3,12 +3,12 @@
 let express = require('express');
 let database = require('./database/database.js')
 let shuffle = require('./helpers/shuffleHelper.js');
+let queue = require('./helpers/queueHelper.js');
 let app = express();
 
 
 app.get('/getFeaturedPlaylists', (req, res) => { 
 	let query = {
-		//keywords: "featured"
 		keywords: { "$in" : ["featured"]}
 	}
 	database.Playlist.find(query).limit(5).exec(function(err, data) {
@@ -30,11 +30,13 @@ app.get('/getPlaylist/:id/', (req, res) => { //t
 				let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'random')
 				responseObject.playlist = playlistWithQueue;
 				responseObject.algorithm = "random";
+				queue.sendMessage({"playlistId": req.params.id, "algorithm": "random", timestamp: Date.now()})
 				res.json(responseObject) 
 			} else { 
 				let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'progressive')
 				responseObject.playlist = playlistWithQueue;
 				responseObject.algorithm = "progressive";
+				queue.sendMessage({"playlistId": req.params.id, "algorithm": "progressive", timestamp: Date.now()})
 				res.json(responseObject)
 			} 
 		}
@@ -54,6 +56,6 @@ exports.close = function (callback) {
   this.server.close(callback);
 };
 
-app.listen(80, () => {
+app.listen(3000, () => {
 	console.log('listening on '+ port)
 })
