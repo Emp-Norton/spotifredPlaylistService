@@ -42,7 +42,7 @@ describe('/getPlaylist', function () {
     });
   });
 
-  it('should return the requested playlist', function (done) { // this will break if I reload the DB with new dummy data, since the actual mongo-generated IDs are already attached
+  it('should return the requested playlist', function (done) { 
     http.get('http://localhost:3000/getPlaylist/1', function (res) {
     	let expected = '1'
       var data = '';
@@ -59,7 +59,7 @@ describe('/getPlaylist', function () {
       });
     });
   });
-  it('should return the requested playlist', function (done) { // this will break if I reload the DB with new dummy data, since the actual mongo-generated IDs are already attached
+  it('should return the requested playlist', function (done) {
     http.get('http://localhost:3000/getPlaylist/9345432', function (res) {
       let expected = '9345432'
       var data = '';
