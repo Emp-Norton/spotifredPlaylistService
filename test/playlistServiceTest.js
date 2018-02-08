@@ -3,7 +3,7 @@ Need to test that:
 	- HTTP endpoints all send responses
 		1.) /getFeaturedPlaylists
 		2.) /getPlaylist/:id
-		3.) /shuffled/:algo/:id (this will probably be folded into each of the above endpoints)
+
 
 	- Endpoints correctly query the database and return the desired object
 		1.) /getPlaylist/:id returns the playlist with the given ID as a JSON object
@@ -18,10 +18,8 @@ Need to test that:
 
 const assert = require('assert'); // vs require('assert') ? node version vs chai. 
 const server = require('../playlistService.js');
-
 const shuffle = require('../helpers/shuffleHelper.js');
 const http = require('http');
-
 
 describe('server', function() {
 
@@ -46,7 +44,7 @@ describe('/getPlaylist', function () {
 
   it('should return the requested playlist', function (done) { // this will break if I reload the DB with new dummy data, since the actual mongo-generated IDs are already attached
     http.get('http://localhost:3000/getPlaylist/1', function (res) {
-    	let expected = JSON.stringify({"songList":[{"_id":"5a71446f124aed3b64c4d141","songId":1,"bpm":50},{"_id":"5a71446f124aed3b64c4d140","songId":2,"bpm":60},{"_id":"5a71446f124aed3b64c4d13f","songId":3,"bpm":60},{"_id":"5a71446f124aed3b64c4d13e","songId":4,"bpm":120},{"_id":"5a71446f124aed3b64c4d13d","songId":5,"bpm":120}],"shuffledQueue":[],"keywords":["fake","fictitious"],"_id":"5a71446f124aed3b64c4d13c","playlistId":1,"playlistName":"my first playlist","__v":0})
+    	let expected = '1'
       var data = '';
 
       res.on('data', function (chunk) {
@@ -54,7 +52,60 @@ describe('/getPlaylist', function () {
       });
 
       res.on('end', function () {
-        assert.equal(expected, data);
+        let resData = JSON.parse(data)
+        let id = resData.playlist.playlistId
+        assert.equal(expected, id);
+        done();
+      });
+    });
+  });
+  it('should return the requested playlist', function (done) { // this will break if I reload the DB with new dummy data, since the actual mongo-generated IDs are already attached
+    http.get('http://localhost:3000/getPlaylist/9345432', function (res) {
+      let expected = '9345432'
+      var data = '';
+
+      res.on('data', function (chunk) {
+        data += chunk;
+      });
+
+      res.on('end', function () {
+        let resData = JSON.parse(data)
+        let id = resData.playlist.playlistId
+        assert.equal(expected, id);
+        done();
+      });
+    });
+  });
+
+  it('should use the correct type of shuffle algorithm for odd indexes (progressive)', function (done) {
+    http.get('http://localhost:3000/getPlaylist/1', function (res) {
+      var data = '';
+
+      res.on('data', function (chunk) {
+        data += chunk;
+      });
+
+      res.on('end', function () {
+        let resData = JSON.parse(data);
+        let algorithm = resData.algorithm;
+        assert.equal("progressive", algorithm);
+        done();
+      });
+    });
+  });
+
+  it('should use the correct type of shuffle algorithm for even indexes (random)', function (done) {
+    http.get('http://localhost:3000/getPlaylist/12', function (res) {
+      var data = '';
+
+      res.on('data', function (chunk) {
+        data += chunk;
+      });
+
+      res.on('end', function () {
+        let resData = JSON.parse(data);
+        let algorithm = resData.algorithm;
+        assert.equal("random", algorithm);
         done();
       });
     });
@@ -71,39 +122,20 @@ describe('/getFeaturedPlaylists', function () {
 
   it('should return an array of featured playlists', function (done) {
     http.get('http://localhost:3000/getFeaturedPlaylists', function (res) {
-    	//let parsedResponse = JSON.parse(res.data)
-    	console.log(res.body) // determine shape of response and devise a test
-    	console.log(res)
-
       var data = '';
+      let expected = 5
 
       res.on('data', function (chunk) {
         data += chunk;
       });
 
       res.on('end', function () {
-        assert.equal(expected, data);
+        let parsedResponse = JSON.parse(data)
+        let responseListLength = JSON.parse(parsedResponse.body).length
+        assert.equal(expected, responseListLength);
         done();
       });
     });
   });
 });
 
-
-
-//   it('should return the requested playlist', function (done) { // this will break if I reload the DB with new dummy data, since the actual mongo-generated IDs are already attached
-//     http.get('http://localhost:3000/getPlaylist/1', function (res) {
-//     	let expected = JSON.stringify({"song_list":[{"_id":"5a6ff2081f6179389fe1dec0","songId":1,"bpm":50},{"_id":"5a6ff2081f6179389fe1debf","songId":2,"bpm":60},{"_id":"5a6ff2081f6179389fe1debe","songId":3,"bpm":60},{"_id":"5a6ff2081f6179389fe1debd","songId":4,"bpm":120},{"_id":"5a6ff2081f6179389fe1debc","songId":5,"bpm":120}],"keywords":["fake","fictitious"],"_id":"5a6ff2081f6179389fe1debb","playlistId":1,"playlist_name":"my first playlist","__v":0})
-//       var data = '';
-
-//       res.on('data', function (chunk) {
-//         data += chunk;
-//       });
-
-//       res.on('end', function () {
-//         assert.equal(expected, data);
-//         done();
-//       });
-//     });
-//   });
-// });
