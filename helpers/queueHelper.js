@@ -1,7 +1,8 @@
+'use strict'
 var aws = require('aws-sdk');
 var queueUrl = "https://sqs.us-west-1.amazonaws.com/276347759228/spotifredEventsQueue";
 
-aws.config.loadFromPath(__dirname + '/../config.json');
+aws.config.loadFromPath(__dirname + '/../config/config.json');
 let sqs = new aws.SQS();
 
 let sendMessage = (message) => {

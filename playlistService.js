@@ -16,7 +16,11 @@ app.get('/getFeaturedPlaylists', (req, res) => {
 	})
 })
 
-app.get('/getPlaylist/:id/', (req, res) => { //t
+app.get('/getPlaylist/:id/', (req, res) => { 
+	let requestedListId = req.params.id;
+	if (parseInt(requestedListId).toString() !== requestedListId) {
+		res.send("Invalid playlist Id - test")
+	}
 	database.Playlist.find({playlistId: req.params.id}, function(err, data) {
 		if (err) {
 		  console.log(err)
@@ -25,23 +29,29 @@ app.get('/getPlaylist/:id/', (req, res) => { //t
 				playlist: undefined,
 				algorithm: undefined
 			}
-			console.log(`Serving playlist #${req.params.id} with ${req.params.id % 2 === 0 ? 'random' : 'progressive BPM'} algorithm`)
-			if (req.params.id % 2 === 0) { 
-				let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'random')
-				responseObject.playlist = playlistWithQueue;
-				responseObject.algorithm = "random";
-				queue.sendMessage({"playlistId": req.params.id, "algorithm": "random", timestamp: Date.now()})
-				res.json(responseObject) 
-			} else { 
-				let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'progressive')
-				responseObject.playlist = playlistWithQueue;
-				responseObject.algorithm = "progressive";
-				queue.sendMessage({"playlistId": req.params.id, "algorithm": "progressive", timestamp: Date.now()})
-				res.json(responseObject)
-			} 
+			//console.log(`Serving playlist #${req.params.id} with ${req.params.id % 2 === 0 ? 'random' : 'progressive BPM'} algorithm`)
+			if (data.length) {
+				if (req.params.id % 2 === 0) { 
+					let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'random')
+					responseObject.playlist = playlistWithQueue;
+					responseObject.algorithm = "random";
+					// messaging disabled during testing 
+					// queue.sendMessage({"playlistId": req.params.id, "algorithm": "random", timestamp: Date.now()})
+					res.json(responseObject) 
+				} else { 
+					let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'progressive')
+					responseObject.playlist = playlistWithQueue;
+					responseObject.algorithm = "progressive";
+					// queue.sendMessage({"playlistId": req.params.id, "algorithm": "progressive", timestamp: Date.now()})
+					res.json(responseObject)
+				} 
+			} else {
+				res.send("Invalid playlist ID");
+			}
 		}
 	})
 })
+
 
 
 const host = '127.0.0.1'; 
@@ -56,6 +66,6 @@ exports.close = function (callback) {
   this.server.close(callback);
 };
 
-app.listen(3000, () => {
+app.listen(80, () => {
 	console.log('listening on '+ port)
 })
