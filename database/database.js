@@ -1,6 +1,7 @@
 'use strict'
 let mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/spotifred');
+//mongoose.connect('mongodb://localhost/spotifred');
+mongoose.connect('mongodb://ec2-54-219-55-100.us-west-1.compute.amazonaws.com:27017/spotifred')
 
 let connection = mongoose.connection;
 
