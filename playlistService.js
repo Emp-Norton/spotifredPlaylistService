@@ -1,11 +1,19 @@
 'use strict'
 // TODO: Messaging logic, addtnl 'nice to have' functionality
+require('newrelic');
 let express = require('express');
 let database = require('./database/database.js')
 let shuffle = require('./helpers/shuffleHelper.js');
 let queue = require('./helpers/queueHelper.js');
 let app = express();
 
+app.get('/test', (req, res) => {
+	res.send('hello')
+})
+
+app.get('/loaderio-2f0f737fa8eaa8125319a78d80f7eb3c', (req, res) => {
+	res.send('loaderio-2f0f737fa8eaa8125319a78d80f7eb3c')
+})
 
 app.get('/getFeaturedPlaylists', (req, res) => { 
 	let query = {
@@ -19,12 +27,14 @@ app.get('/getFeaturedPlaylists', (req, res) => {
 app.get('/getPlaylist/:id/', (req, res) => { 
 	let requestedListId = req.params.id;
 	if (parseInt(requestedListId).toString() !== requestedListId) {
-		res.send("Invalid playlist Id - test")
+		res.send("Invalid playlist Id")
+		return
 	}
 	database.Playlist.find({playlistId: req.params.id}, function(err, data) {
 		if (err) {
 		  console.log(err)
 		} else {
+//		console.log(data)
 			let responseObject = {
 				playlist: undefined,
 				algorithm: undefined
@@ -35,14 +45,13 @@ app.get('/getPlaylist/:id/', (req, res) => {
 					let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'random')
 					responseObject.playlist = playlistWithQueue;
 					responseObject.algorithm = "random";
-					// messaging disabled during testing 
-					// queue.sendMessage({"playlistId": req.params.id, "algorithm": "random", timestamp: Date.now()})
+					queue.sendMessage({"playlistId": req.params.id, "algorithm": "random", timestamp: Date.now()})
 					res.json(responseObject) 
 				} else { 
 					let playlistWithQueue = shuffle.addShuffledQueue(data[0], 'progressive')
 					responseObject.playlist = playlistWithQueue;
 					responseObject.algorithm = "progressive";
-					// queue.sendMessage({"playlistId": req.params.id, "algorithm": "progressive", timestamp: Date.now()})
+				        queue.sendMessage({"playlistId": req.params.id, "algorithm": "progressive", timestamp: Date.now()})
 					res.json(responseObject)
 				} 
 			} else {
