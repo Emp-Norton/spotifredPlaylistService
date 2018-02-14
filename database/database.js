@@ -1,8 +1,8 @@
 'use strict'
 let mongoose = require('mongoose');
 //mongoose.connect('mongodb://localhost/spotifred');
-mongoose.connect('mongodb://ec2-54-219-55-100.us-west-1.compute.amazonaws.com:27017/spotifred')
-
+mongoose.connect('mongodb://ip-10-0-1-251.us-west-1.compute.internal:27017/spotifred'); // single instance DB
+//mongoose.connect('mongodb://ec2-54-176-146-55.us-west-1.compute.amazonaws.com:27017/spotifred'); // sharded cluster
 let connection = mongoose.connection;
 
 connection.once('open', function callback(){
