@@ -1,7 +1,7 @@
 'use strict'
 var aws = require('aws-sdk');
-var queueUrl = "https://sqs.us-west-1.amazonaws.com/276347759228/spotifredEventsQueue";
-
+//var queueUrl = "https://sqs.us-west-1.amazonaws.com/276347759228/spotifredEventsQueue";
+var queueUrl = "https://sqs.us-west-1.amazonaws.com/328498760268/playlistServed";
 aws.config.loadFromPath(__dirname + '/../config/config.json');
 let sqs = new aws.SQS();
 
